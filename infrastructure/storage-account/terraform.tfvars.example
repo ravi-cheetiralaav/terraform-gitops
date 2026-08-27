@@ -1,6 +1,6 @@
 resource_group_name       = "rg-storage-demo"
 location                  = "eastus"
-storage_account_name      = "ststoragedemo001"
+storage_account_name      = "ststoragedemo5dea88"
 account_tier              = "Standard"
 account_replication_type  = "LRS"
 
