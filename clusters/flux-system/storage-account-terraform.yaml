@@ -24,6 +24,7 @@ spec:
   interval: 10m
   path: ./infrastructure/storage-account
   approvePlan: "auto" # auto-approve and apply every generated plan
+  destroyResourcesOnDeletion: true # run `terraform destroy` when this resource is deleted
   serviceAccountName: tofu-controller-storage
   sourceRef:
     kind: GitRepository
