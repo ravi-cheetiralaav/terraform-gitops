@@ -23,7 +23,7 @@ metadata:
 spec:
   interval: 10m
   path: ./infrastructure/storage-account
-  approvePlan: "" # set to the plan id in status.plan.pending to approve, or "auto" to auto-apply
+  approvePlan: "auto" # auto-approve and apply every generated plan
   serviceAccountName: tofu-controller-storage
   sourceRef:
     kind: GitRepository
