@@ -1,0 +1,54 @@
+# Flux GitRepository source pointing at this repo, used by the Terraform
+# custom resource below. Adjust `url` and `ref` to match your Git remote.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: terraform-gitops
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://github.com/ravi-cheetiralaav/terraform-gitops.git
+  ref:
+    branch: main
+---
+# Terraform custom resource reconciled by Tofu Controller. It sources the
+# ./infrastructure/storage-account configuration and authenticates to Azure
+# via Workload Identity federated to the tofu-controller-storage ServiceAccount
+# (see storage-account-serviceaccount.yaml) -- no client secret is stored.
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: storage-account
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./infrastructure/storage-account
+  approvePlan: "" # set to the plan id in status.plan.pending to approve, or "auto" to auto-apply
+  serviceAccountName: tofu-controller-storage
+  sourceRef:
+    kind: GitRepository
+    name: terraform-gitops
+    namespace: flux-system
+  varsFrom:
+    - kind: ConfigMap
+      name: storage-account-tfvars
+  runnerPodTemplate:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
+    spec:
+      env:
+        - name: ARM_CLIENT_ID
+          value: "c776fe54-a4bb-49df-b927-eabba61dd6ac"
+        - name: ARM_TENANT_ID
+          value: "cf36141c-ddd7-45a7-b073-111f66d0b30c"
+        - name: ARM_SUBSCRIPTION_ID
+          value: "5dea8835-8c38-4f4d-8ac2-7accd278807d"
+        - name: ARM_USE_AKS_WORKLOAD_IDENTITY
+          value: "true"
+  writeOutputsToSecret:
+    name: storage-account-outputs
+    outputs:
+      - storage_account_id
+      - storage_account_name
+      - primary_blob_endpoint

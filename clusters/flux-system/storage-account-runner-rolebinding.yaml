@@ -1,0 +1,15 @@
+# Grants the custom runner ServiceAccount the same permissions as the
+# Helm-managed tf-runner ClusterRole, without modifying Helm-owned resources.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tofu-controller-storage-runner-binding
+  namespace: flux-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tf-runner-role
+subjects:
+  - kind: ServiceAccount
+    name: tofu-controller-storage
+    namespace: flux-system

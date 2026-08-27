@@ -1,0 +1,10 @@
+resource_group_name       = "rg-storage-demo"
+location                  = "eastus"
+storage_account_name      = "ststoragedemo001"
+account_tier              = "Standard"
+account_replication_type  = "LRS"
+
+tags = {
+  environment = "dev"
+  managed_by  = "tofu-controller"
+}
