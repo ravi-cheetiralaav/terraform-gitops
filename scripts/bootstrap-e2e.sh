@@ -132,20 +132,19 @@ flux bootstrap github \
 log "Waiting for the flux-system Kustomization to become Ready"
 kubectl wait kustomization/flux-system -n flux-system --for=condition=Ready --timeout="${WAIT_TIMEOUT_SECONDS}s"
 
-# ---- 4. Tofu Controller (one-time Helm bootstrap to avoid CRD chicken-and-egg) ---
-log "Ensuring Tofu Controller is installed via Helm"
-helm repo add flux-iac https://flux-iac.github.io/tofu-controller >/dev/null
-helm repo update flux-iac >/dev/null
-helm upgrade --install tofu-controller flux-iac/tofu-controller -n flux-system --wait --timeout 5m
+# ---- 4. Tofu Controller (installed declaratively by Flux via HelmRelease) --
+# The root Kustomization at $FLUX_PATH is scoped (via kustomization.yaml) to
+# only apply flux-system/* plus the two child Kustomization objects below, so
+# its dry-run never depends on the Terraform CRD. The "tofu-controller" child
+# Kustomization installs the HelmRelease, which helm-controller reconciles on
+# its own -- no manual `helm install` needed, and no CRD chicken-and-egg.
+log "Waiting for the tofu-controller Kustomization and HelmRelease to become Ready"
+kubectl wait kustomization/tofu-controller -n flux-system --for=condition=Ready --timeout="${WAIT_TIMEOUT_SECONDS}s"
+kubectl wait helmrelease/tofu-controller -n flux-system --for=condition=Ready --timeout="${WAIT_TIMEOUT_SECONDS}s"
 
-log "Restarting kustomize-controller to refresh its API discovery cache with the new CRD"
-kubectl rollout restart deployment kustomize-controller -n flux-system
-kubectl rollout status deployment kustomize-controller -n flux-system --timeout=120s
-
-# ---- 5. Wait for the child Kustomizations and Terraform CR -----------------
-log "Waiting for tofu-controller and workloads Kustomizations to become Ready"
-kubectl wait kustomization/tofu-controller -n flux-system --for=condition=Ready --timeout="${WAIT_TIMEOUT_SECONDS}s" || true
-kubectl wait kustomization/workloads -n flux-system --for=condition=Ready --timeout="${WAIT_TIMEOUT_SECONDS}s" || true
+# ---- 5. Wait for the workloads Kustomization and Terraform CR --------------
+log "Waiting for the workloads Kustomization to become Ready"
+kubectl wait kustomization/workloads -n flux-system --for=condition=Ready --timeout="${WAIT_TIMEOUT_SECONDS}s"
 
 log "Waiting for Terraform/$TERRAFORM_NAME to become Ready"
 if kubectl wait terraform/"$TERRAFORM_NAME" -n flux-system --for=condition=Ready --timeout="${WAIT_TIMEOUT_SECONDS}s"; then

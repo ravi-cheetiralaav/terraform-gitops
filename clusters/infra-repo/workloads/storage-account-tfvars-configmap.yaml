@@ -11,5 +11,3 @@ data:
   storage_account_name: "ststoragedemo5dea88"
   account_tier: "Standard"
   account_replication_type: "LRS"
-  # map(string) vars must be valid HCL/JSON so tofu can parse the -var value
-  tags: '{"environment":"dev","managed_by":"tofu-controller"}'

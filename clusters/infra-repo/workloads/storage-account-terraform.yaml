@@ -32,6 +32,13 @@ spec:
   varsFrom:
     - kind: ConfigMap
       name: storage-account-tfvars
+  # map(string) vars need a real JSON value; varsFrom ConfigMap values are
+  # always strings, so tags is set here instead.
+  vars:
+    - name: tags
+      value:
+        environment: dev
+        managed_by: tofu-controller
   runnerPodTemplate:
     metadata:
       labels:
