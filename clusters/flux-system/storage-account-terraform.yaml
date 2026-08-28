@@ -26,6 +26,17 @@ spec:
   approvePlan: "auto" # auto-approve and apply every generated plan
   destroyResourcesOnDeletion: true # run `terraform destroy` when this resource is deleted
   serviceAccountName: tofu-controller-storage
+  # Remote state in a dedicated Azure Storage account (bootstrapped separately,
+  # outside this Terraform run) instead of the default in-cluster k8s Secret.
+  backendConfig:
+    customConfiguration: |
+      backend "azurerm" {
+        resource_group_name       = "terraform-state"
+        storage_account_name      = "tfravistatedev"
+        container_name            = "tfstate"
+        key                       = "storage-account.tfstate"
+        use_aks_workload_identity = true
+      }
   sourceRef:
     kind: GitRepository
     name: terraform-gitops
