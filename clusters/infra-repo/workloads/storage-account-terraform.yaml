@@ -12,7 +12,7 @@ spec:
   interval: 10m
   path: ./infrastructure/storage-account
   approvePlan: "auto" # auto-approve and apply every generated plan
-  destroyResourcesOnDeletion: true # run `terraform destroy` when this resource is deleted
+  destroyResourcesOnDeletion: false # run `terraform destroy` when this resource is deleted
   serviceAccountName: tofu-controller-storage
   # Remote state in a dedicated Azure Storage account (bootstrapped separately,
   # outside this Terraform run) instead of the default in-cluster k8s Secret.
