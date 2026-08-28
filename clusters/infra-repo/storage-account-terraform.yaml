@@ -1,20 +1,8 @@
-# Flux GitRepository source pointing at this repo, used by the Terraform
-# custom resource below. Adjust `url` and `ref` to match your Git remote.
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: GitRepository
-metadata:
-  name: terraform-gitops
-  namespace: flux-system
-spec:
-  interval: 5m
-  url: https://github.com/ravi-cheetiralaav/terraform-gitops.git
-  ref:
-    branch: main
----
 # Terraform custom resource reconciled by Tofu Controller. It sources the
 # ./infrastructure/storage-account configuration and authenticates to Azure
 # via Workload Identity federated to the tofu-controller-storage ServiceAccount
 # (see storage-account-serviceaccount.yaml) -- no client secret is stored.
+# sourceRef reuses the flux-system GitRepository created by `flux bootstrap`.
 apiVersion: infra.contrib.fluxcd.io/v1alpha2
 kind: Terraform
 metadata:
@@ -39,7 +27,7 @@ spec:
       }
   sourceRef:
     kind: GitRepository
-    name: terraform-gitops
+    name: flux-system
     namespace: flux-system
   varsFrom:
     - kind: ConfigMap
