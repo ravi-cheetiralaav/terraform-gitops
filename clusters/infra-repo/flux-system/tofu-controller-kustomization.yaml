@@ -1,0 +1,18 @@
+# Installs Tofu Controller first. `wait: true` makes this Kustomization block
+# until the HelmRelease reports Ready (CRD + controller installed), so the
+# dependent "workloads" Kustomization never dry-run-fails on a missing CRD.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: tofu-controller
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./clusters/infra-repo/tofu-controller
+  prune: true
+  wait: true
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system

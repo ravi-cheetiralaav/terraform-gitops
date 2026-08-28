@@ -1,0 +1,18 @@
+# Terraform resources and their supporting manifests. Depends on the
+# tofu-controller Kustomization so the Terraform CRD exists before this
+# Kustomization's dry-run validation runs.
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: workloads
+  namespace: flux-system
+spec:
+  interval: 10m
+  path: ./clusters/infra-repo/workloads
+  prune: true
+  dependsOn:
+    - name: tofu-controller
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
