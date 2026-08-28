@@ -39,7 +39,7 @@ spec:
     spec:
       env:
         - name: ARM_CLIENT_ID
-          value: "c776fe54-a4bb-49df-b927-eabba61dd6ac"
+          value: "8542c910-9292-4164-97bf-12853a910638"
         - name: ARM_TENANT_ID
           value: "cf36141c-ddd7-45a7-b073-111f66d0b30c"
         - name: ARM_SUBSCRIPTION_ID

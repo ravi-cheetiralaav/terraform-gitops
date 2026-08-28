@@ -1,0 +1,11 @@
+# Restricts what the bootstrap-managed "flux-system" Kustomization applies at
+# this path. Explicitly excludes tofu-controller/ and workloads/ content so the
+# root Kustomization's dry-run never depends on CRDs those subpaths install --
+# they're reconciled independently by the two Kustomizations listed below,
+# ordered via dependsOn (see tofu-controller-kustomization.yaml / workloads-kustomization.yaml).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- flux-system
+- tofu-controller-kustomization.yaml
+- workloads-kustomization.yaml
